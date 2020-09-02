@@ -1,0 +1,42 @@
+
+WHITESPACE = _{ " "|"\n"}
+
+identifier = @{(ASCII_ALPHA_LOWER) ~ ("_"|ASCII_ALPHA_LOWER|ASCII_DIGIT)*}
+
+integer = @{ASCII_DIGIT+}
+floating = @{integer* ~ "." ~ integer*}
+
+string                      = ${ string_single_line }
+string_single_line          = _{ string_delimiter ~ string_content ~ string_delimiter }
+string_content              = ${ (string_escape | !(string_delimiter | "\\") ~ ANY)* }
+string_delimiter            = _{ "\"" }
+string_unicode              = _{ "u" ~ ('0'..'9' | 'a'..'f' | 'A'..'F'){4} }
+string_escape               = _{ "\\" ~ ("\"" | "\\" | "a" | "b" | "f" | "n" | "r" | "t" | "v" | string_unicode) }
+
+
+
+
+struct_def = {"struct" ~ identifier ~ "{" ~ (identifier ~":" ~ type_info)* ~ "}"}
+
+
+
+type_info = @{identifier}
+scope ={ "{" ~ expr*  ~ "}"}
+
+extern_keyword = @{"extern"}
+
+function_def = {"def" ~ identifier ~ "("~ (identifier ~":" ~ type_info)* ~ ")"~ "=" ~ (scope|extern_keyword)}
+
+function_call = {identifier ~ "(" ~ (identifier ~ ",")* ~ (identifier)? ~ ")"}
+
+
+
+
+var_assign = {identifier~"=" ~ expr}
+var_create_assign = {"var" ~ identifier ~ ("=" ~ expr)?} 
+
+
+file = {SOI ~ expr* ~ EOI}
+
+expr = {var_create_assign|function_def|struct_def|function_call|var_assign|identifier|string|scope|floating|integer}
+

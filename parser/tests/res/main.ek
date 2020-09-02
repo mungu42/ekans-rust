@@ -1,0 +1,9 @@
+struct i32{}
+
+def func() = {
+
+    var x1 = "aqawlkndkajsndkajsndlkasndlkn"
+}
+
+def move() = extern
+
